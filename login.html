@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f8f5">
+    <meta name="description" content="Administrator login for Roam vehicle rentals.">
+    <title>Admin login — Roam</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="login.js" defer></script>
+  </head>
+  <body class="auth-page">
+    <main class="auth-card">
+      <a class="brand auth-brand" href="/" aria-label="Back to Roam"><span class="brand-mark">r</span><span class="brand-name">roam</span><span class="brand-period">.</span></a>
+      <span class="eyebrow muted-eyebrow" id="auth-eyebrow">SECURE ADMIN ACCESS</span>
+      <h1 id="auth-title">Welcome back.</h1>
+      <p class="auth-description" id="auth-description">Log in to manage your fleet, bookings, and website.</p>
+      <form id="auth-form">
+        <label class="modal-label">Administrator email<input name="email" type="email" autocomplete="username" placeholder="you@example.com" required maxlength="254"></label>
+        <label class="modal-label">Password<input name="password" type="password" autocomplete="current-password" required maxlength="200"></label>
+        <label class="modal-label" id="confirm-password-field" hidden>Confirm password<input name="confirmPassword" type="password" autocomplete="new-password" minlength="12" maxlength="200"></label>
+        <p class="auth-error" id="auth-error" role="alert" hidden></p>
+        <button class="primary-action" id="auth-submit" type="submit">Log in</button>
+      </form>
+      <p class="auth-note" id="auth-note" hidden>Your first admin account is saved in your local SQL database. Choose a password with at least 12 characters.</p>
+      <a class="back-link" href="/">← Back to the rental site</a>
+    </main>
+  </body>
+</html>

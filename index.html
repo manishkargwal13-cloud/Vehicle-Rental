@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f8f5">
+    <meta name="description" content="Find and book cars, bikes, and scooters from trusted local hosts with Roam.">
+    <title>Roam — Find your way</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="Roam home"><span class="brand-mark">r</span><span class="brand-name">roam</span><span class="brand-period">.</span></a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="#explore" data-setting="exploreNav">Explore</a>
+        <a class="nav-link" href="#how-it-works" data-setting="howNav">How it works</a>
+      </nav>
+      <div class="header-actions">
+        <button class="text-button host-link" id="list-vehicle-button" type="button" data-setting="listVehicleButton" hidden>List your vehicle</button>
+        <button class="text-button manage-link" id="manage-button" type="button">Admin login</button>
+        <button class="text-button logout-button" id="logout-button" type="button" hidden>Log out</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="explore">
+        <div class="hero-copy">
+          <span class="eyebrow"><span class="eyebrow-dot"></span><span data-setting="heroEyebrow">THE ROAD IS YOURS</span></span>
+          <h1><span data-setting="heroTitle">Find your way.</span><br><span data-setting="heroAccent">Go somewhere.</span></h1>
+          <p data-setting="heroDescription">Good rides, great prices, and the freedom to take the scenic route.</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="sun"></div>
+          <div class="hero-shape shape-back"></div>
+          <div class="hero-shape shape-front"></div>
+          <div class="hero-road"></div>
+          <span class="hero-spark spark-one">✳</span>
+          <span class="hero-spark spark-two">✳</span>
+          <div class="hero-car"><span></span></div>
+        </div>
+        <form class="search-panel" id="search-form">
+          <label class="search-field location-field">
+            <span class="field-icon" aria-hidden="true">⌖</span>
+            <span class="field-content"><span class="field-label" data-setting="pickupLabel">PICKUP LOCATION</span><input id="location-input" type="text" data-setting-placeholder="pickupPlaceholder" placeholder="Where are you going?" autocomplete="address-level2"></span>
+          </label>
+          <label class="search-field">
+            <span class="field-icon calendar-icon" aria-hidden="true">▦</span>
+            <span class="field-content"><span class="field-label" data-setting="pickupDateLabel">PICKUP DATE</span><input id="pickup-input" type="date" aria-label="Pickup date"></span>
+          </label>
+          <label class="search-field">
+            <span class="field-icon calendar-icon" aria-hidden="true">▦</span>
+            <span class="field-content"><span class="field-label" data-setting="returnDateLabel">RETURN DATE</span><input id="return-input" type="date" aria-label="Return date"></span>
+          </label>
+          <button class="search-button" type="submit"><span aria-hidden="true">⌕</span><span data-setting="searchButton">Find a ride</span></button>
+        </form>
+      </section>
+
+      <section class="browse-section" aria-labelledby="browse-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow muted-eyebrow" data-setting="browseEyebrow">YOUR NEXT RIDE</span>
+            <h2 id="browse-title" data-setting="browseTitle">Pick your kind of trip</h2>
+          </div>
+          <label class="sort-control"><span data-setting="sortLabel">Sort by</span> <select id="sort-select" aria-label="Sort vehicles"><option value="recommended">Recommended</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="rating">Top rated</option></select></label>
+        </div>
+        <div class="category-row" role="group" aria-label="Filter by vehicle type">
+          <button class="category-chip active" data-category="all" type="button"><span class="category-icon">✳</span><span data-setting="allRides">All rides</span></button>
+          <button class="category-chip" data-category="Car" type="button"><span class="category-icon">⌑</span><span data-setting="cars">Cars</span></button>
+          <button class="category-chip" data-category="Bike" type="button"><span class="category-icon">♧</span><span data-setting="bikes">Bikes</span></button>
+          <button class="category-chip" data-category="Scooter" type="button"><span class="category-icon">↗</span><span data-setting="scooters">Scooters</span></button>
+        </div>
+        <div class="results-line"><p id="results-count" aria-live="polite"></p><button class="clear-filters" id="clear-filters" type="button" data-setting="clearFilters">Clear filters</button></div>
+        <div class="vehicle-grid" id="vehicle-grid"></div>
+        <div class="empty-state" id="empty-state" hidden>
+          <span aria-hidden="true">⌕</span>
+          <h3 data-setting="emptyTitle">No rides found just yet</h3>
+          <p data-setting="emptyDescription">Try another location or switch up your filters.</p>
+          <button class="outline-button" id="empty-clear-button" type="button" data-setting="showAllButton">Show all rides</button>
+        </div>
+      </section>
+
+      <section class="how-section" id="how-it-works">
+        <div class="how-intro"><span class="eyebrow muted-eyebrow" data-setting="howEyebrow">EASY AS ONE, TWO, GO</span><h2 data-setting="howTitle">A better way to get there.</h2><p data-setting="howDescription">Skip the rental counter. Your next adventure is just a few taps away.</p></div>
+        <div class="steps">
+          <article class="step-card"><span class="step-number">01</span><div class="step-icon">⌕</div><h3 data-setting="step1Title">Find your ride</h3><p data-setting="step1Description">Browse unique rides from local hosts in your neighborhood.</p></article>
+          <article class="step-card"><span class="step-number">02</span><div class="step-icon">▦</div><h3 data-setting="step2Title">Book in a few taps</h3><p data-setting="step2Description">Choose your dates, confirm your details, and you’re all set.</p></article>
+          <article class="step-card"><span class="step-number">03</span><div class="step-icon">↗</div><h3 data-setting="step3Title">Make it a trip</h3><p data-setting="step3Description">Pick up your ride and take the long way if you feel like it.</p></article>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer"><a class="brand footer-brand" href="#"><span class="brand-mark">r</span><span class="brand-name">roam</span><span class="brand-period">.</span></a><p data-setting="footerDescription">Good rides for wherever life takes you.</p><span data-setting="copyright">© 2026 Roam Rentals</span></footer>
+
+    <div class="modal-backdrop" id="modal-backdrop" hidden>
+      <section class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button class="modal-close" id="modal-close" type="button" aria-label="Close dialog">×</button>
+        <div id="modal-content"></div>
+      </section>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

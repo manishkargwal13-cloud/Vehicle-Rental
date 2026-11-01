@@ -1,0 +1,13 @@
+{
+  "name": "roam-vehicle-rental",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A local vehicle rental marketplace with a SQLite-backed management API",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

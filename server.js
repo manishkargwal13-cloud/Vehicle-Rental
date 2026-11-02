@@ -499,7 +499,7 @@ async function serveStatic(request, response, url) {
     response.end();
     return;
   }
-  if (!["/index.html", "/login.html", "/login.js", "/styles.css", "/app.js"].includes(pathname)) throw new HttpError(404, "File not found.");
+  if (!["/index.html", "/login.html", "/styles.css"].includes(pathname)) throw new HttpError(404, "File not found.");
   const filePath = resolve(root, `.${pathname}`);
   if (filePath !== root && !filePath.startsWith(`${root}${sep}`)) throw new HttpError(403, "Forbidden.");
   if (!existsSync(filePath)) throw new HttpError(404, "File not found.");

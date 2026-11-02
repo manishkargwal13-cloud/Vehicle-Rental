@@ -15,6 +15,8 @@ A local vehicle-rental marketplace with a Node.js API and a SQLite SQL database.
 
 The app creates `data\roam.sqlite` and seeds the example fleet the first time it starts. The server binds to `127.0.0.1`; management routes require an administrator login. This is intended for local development. Add HTTPS and further deployment hardening before exposing it to other machines or the public internet.
 
+The storefront and administrator page keep their browser-side behavior inline with their HTML, so each page contains its own markup and interactions. Shared presentation styles are in `styles.css`.
+
 ## Manage the marketplace
 
 Select **Admin login** in the header to open the login page. On a fresh database, it prompts you to create the first administrator account. Once logged in, select **Manage fleet & site** to:

@@ -1,4 +1,4 @@
-// vehicles-data.js (Updated Version)
+// vehiclesdata.js (Guaranteed Live Fix)
 const vehiclesData = [
   // CARS
   {
@@ -84,115 +84,97 @@ const vehiclesData = [
   }
 ];
 
-function initRoamVehicles() {
-  // "No rides found just yet" wale box ya "Backend connection required" ko dhundhna
-  const allElements = Array.from(document.querySelectorAll("h2, p, div, span"));
-  const targetEl = allElements.find(
-    (el) =>
-      el.textContent.trim() === "No rides found just yet" ||
-      el.textContent.trim() === "Backend connection required"
-  );
+let currentCategory = "All rides";
 
-  if (!targetEl) return;
+function getCardHTML(v) {
+  return `
+    <div style="border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: left;">
+      <img src="${v.image}" alt="${v.name}" style="width: 100%; height: 180px; object-fit: cover; display: block;">
+      <div style="padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 12px; font-weight: 600; background: #ecfccb; color: #365314; padding: 3px 8px; border-radius: 6px;">${v.type}</span>
+          <span style="font-size: 13px; font-weight: 600;">★ ${v.rating}</span>
+        </div>
+        <h3 style="margin: 6px 0; font-size: 18px; color: #111827;">${v.name}</h3>
+        <p style="margin: 0 0 12px; font-size: 13px; color: #6b7280;">${v.location} • ${v.fuel} • ${v.seats} Seats</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f6; padding-top: 12px;">
+          <div>
+            <strong style="font-size: 18px; color: #111827;">₹${v.price}</strong>
+            <span style="font-size: 12px; color: #6b7280;"> / day</span>
+          </div>
+          <button onclick="alert('Booking selected: ${v.name} (₹${v.price}/day)')" style="background: #84cc16; color: #111; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            Book now
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
-  // Agar "No rides found just yet" ek card box ke andar hai, to poore empty-state box ko replace karein
-  const containerToReplace =
-    targetEl.textContent.trim() === "No rides found just yet" && targetEl.parentElement
-      ? targetEl.parentElement
-      : targetEl;
+function syncVehiclesUI() {
+  const filtered =
+    currentCategory === "All rides"
+      ? vehiclesData
+      : vehiclesData.filter(
+          (v) => v.type.toLowerCase() === currentCategory.toLowerCase()
+        );
 
-  // Grid container banana
-  let grid = document.getElementById("roam-vehicles-grid");
-  if (!grid) {
-    grid = document.createElement("div");
-    grid.id = "roam-vehicles-grid";
-    grid.style.cssText = `
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 20px;
-      margin-top: 24px;
-      width: 100%;
-    `;
-    containerToReplace.replaceWith(grid);
-  }
-
-  // "0 rides to explore" wale text ko dhundhna
+  // Count text ("0 rides to explore") अपडेट करना
   const countEl = Array.from(document.querySelectorAll("p, span, div")).find((el) =>
     /^\d+\s+rides to explore$/i.test(el.textContent.trim())
   );
-
-  // Vehicles render karne ka function
-  function renderVehicles(category = "All rides") {
-    const filtered =
-      category === "All rides"
-        ? vehiclesData
-        : vehiclesData.filter(
-            (v) => v.type.toLowerCase() === category.toLowerCase()
-          );
-
-    if (countEl) {
-      countEl.textContent = `${filtered.length} rides to explore`;
-    }
-
-    grid.innerHTML = filtered
-      .map(
-        (v) => `
-      <div style="border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: left;">
-        <img src="${v.image}" alt="${v.name}" style="width: 100%; height: 180px; object-fit: cover;">
-        <div style="padding: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <span style="font-size: 12px; font-weight: 600; background: #ecfccb; color: #365314; padding: 3px 8px; border-radius: 6px;">${v.type}</span>
-            <span style="font-size: 13px; font-weight: 600;">★ ${v.rating}</span>
-          </div>
-          <h3 style="margin: 6px 0; font-size: 18px; color: #111827;">${v.name}</h3>
-          <p style="margin: 0 0 12px; font-size: 13px; color: #6b7280;">${v.location} • ${v.fuel} • ${v.seats} Seats</p>
-          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f6; padding-top: 12px;">
-            <div>
-              <strong style="font-size: 18px; color: #111827;">₹${v.price}</strong>
-              <span style="font-size: 12px; color: #6b7280;"> / day</span>
-            </div>
-            <button onclick="alert('Booking selected: ${v.name} (₹${v.price}/day)')" style="background: #84cc16; color: #111; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;">
-              Book now
-            </button>
-          </div>
-        </div>
-      </div>
-    `
-      )
-      .join("");
+  if (countEl && countEl.textContent.trim() !== `${filtered.length} rides to explore`) {
+    countEl.textContent = `${filtered.length} rides to explore`;
   }
 
-  // Filter buttons par click listener lagana (capture phase mein taaki purana code overwrite na kare)
+  // Empty state ("No rides found just yet" / "Backend connection required") को कार्ड्स से बदलना
+  let grid = document.getElementById("roam-vehicles-grid");
+  if (!grid) {
+    const targetEl = Array.from(document.querySelectorAll("h2, p, div, span")).find(
+      (el) =>
+        el.textContent.trim() === "No rides found just yet" ||
+        el.textContent.trim() === "Backend connection required"
+    );
+
+    if (targetEl) {
+      const box =
+        targetEl.textContent.trim() === "No rides found just yet" && targetEl.parentElement
+          ? targetEl.parentElement
+          : targetEl;
+
+      grid = document.createElement("div");
+      grid.id = "roam-vehicles-grid";
+      grid.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+        width: 100%;
+      `;
+      box.replaceWith(grid);
+    }
+  }
+
+  if (grid) {
+    grid.innerHTML = filtered.map(getCardHTML).join("");
+  }
+
+  // Category buttons पर क्लिक लिसनर लगाना
   const categories = ["All rides", "Cars", "Bikes", "Scooters"];
   const buttons = Array.from(document.querySelectorAll("button")).filter((btn) =>
     categories.includes(btn.textContent.trim())
   );
 
   buttons.forEach((btn) => {
-    btn.addEventListener(
-      "click",
-      (e) => {
-        e.stopImmediatePropagation();
-        const selected = btn.textContent.trim();
-
-        buttons.forEach((b) => {
-          b.style.background = "transparent";
-          b.style.fontWeight = "normal";
-        });
-        btn.style.background = "#bef264";
-        btn.style.fontWeight = "600";
-
-        renderVehicles(selected);
-      },
-      true
-    );
+    if (!btn.dataset.roamBound) {
+      btn.dataset.roamBound = "1";
+      btn.addEventListener("click", () => {
+        currentCategory = btn.textContent.trim();
+        setTimeout(syncVehiclesUI, 50);
+      });
+    }
   });
-
-  // Shuru mein saari gaadiyan dikhayein
-  renderVehicles("All rides");
 }
 
-// Thoda delay dekar run karein taaki site ka purana script pehle load ho jaye
-window.addEventListener("load", () => {
-  setTimeout(initRoamVehicles, 300);
-});
+setInterval(syncVehiclesUI, 500);
+window.addEventListener("load", () => setTimeout(syncVehiclesUI, 200));

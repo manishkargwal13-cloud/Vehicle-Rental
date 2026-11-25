@@ -32,7 +32,7 @@ const ROAM_VEHICLES = [
     location: "Manali",
     fuel: "Diesel",
     seats: 4,
-    image: "https://www.bajajfinserv.in/hindi/bmall/mahindra-thar-4wd-lx-at-4-seater-hard-top-petrol-everest-white/p/45672"
+    image: "https://mc.bajajfinserv.in/media/catalog/product/3/7/373864everestwhite_additional2.jpeg"
   },
 
   // BIKES

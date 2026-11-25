@@ -1,4 +1,4 @@
-// vehicles-data.js
+// vehicles-data.js (Updated Version)
 const vehiclesData = [
   // CARS
   {
@@ -84,28 +84,44 @@ const vehiclesData = [
   }
 ];
 
-document.addEventListener("DOMContentLoaded", () => {
-  // "Backend connection required" wale text ko dhundhna
-  const allElements = Array.from(document.querySelectorAll("p, div, span"));
-  const errorEl = allElements.find(
-    (el) => el.textContent.trim() === "Backend connection required"
+function initRoamVehicles() {
+  // "No rides found just yet" wale box ya "Backend connection required" ko dhundhna
+  const allElements = Array.from(document.querySelectorAll("h2, p, div, span"));
+  const targetEl = allElements.find(
+    (el) =>
+      el.textContent.trim() === "No rides found just yet" ||
+      el.textContent.trim() === "Backend connection required"
   );
 
-  if (!errorEl) return;
+  if (!targetEl) return;
 
-  // Vehicles dikhane ke liye grid container banana
-  const grid = document.createElement("div");
-  grid.id = "roam-vehicles-grid";
-  grid.style.cssText = `
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 20px;
-    margin-top: 24px;
-    width: 100%;
-  `;
-  errorEl.replaceWith(grid);
+  // Agar "No rides found just yet" ek card box ke andar hai, to poore empty-state box ko replace karein
+  const containerToReplace =
+    targetEl.textContent.trim() === "No rides found just yet" && targetEl.parentElement
+      ? targetEl.parentElement
+      : targetEl;
 
-  // Cards render karne ka function
+  // Grid container banana
+  let grid = document.getElementById("roam-vehicles-grid");
+  if (!grid) {
+    grid = document.createElement("div");
+    grid.id = "roam-vehicles-grid";
+    grid.style.cssText = `
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+      width: 100%;
+    `;
+    containerToReplace.replaceWith(grid);
+  }
+
+  // "0 rides to explore" wale text ko dhundhna
+  const countEl = Array.from(document.querySelectorAll("p, span, div")).find((el) =>
+    /^\d+\s+rides to explore$/i.test(el.textContent.trim())
+  );
+
+  // Vehicles render karne ka function
   function renderVehicles(category = "All rides") {
     const filtered =
       category === "All rides"
@@ -114,10 +130,14 @@ document.addEventListener("DOMContentLoaded", () => {
             (v) => v.type.toLowerCase() === category.toLowerCase()
           );
 
+    if (countEl) {
+      countEl.textContent = `${filtered.length} rides to explore`;
+    }
+
     grid.innerHTML = filtered
       .map(
         (v) => `
-      <div style="border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <div style="border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: left;">
         <img src="${v.image}" alt="${v.name}" style="width: 100%; height: 180px; object-fit: cover;">
         <div style="padding: 16px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -142,28 +162,43 @@ document.addEventListener("DOMContentLoaded", () => {
       .join("");
   }
 
-  // Filter buttons (All rides, Cars, Bikes, Scooters) par click event lagana
+  // Filter buttons par click listener lagana (capture phase mein taaki purana code overwrite na kare)
   const categories = ["All rides", "Cars", "Bikes", "Scooters"];
   const buttons = Array.from(document.querySelectorAll("button")).filter((btn) =>
     categories.includes(btn.textContent.trim())
   );
 
   buttons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const selected = btn.textContent.trim();
+    btn.addEventListener(
+      "click",
+      (e) => {
+        e.stopImmediatePropagation();
+        const selected = btn.textContent.trim();
 
-      // Active button highlight update karna
-      buttons.forEach((b) => {
-        b.style.background = "transparent";
-        b.style.fontWeight = "normal";
-      });
-      btn.style.background = "#bef264";
-      btn.style.fontWeight = "600";
+        buttons.forEach((b) => {
+          b.style.background = "transparent";
+          b.style.fontWeight = "normal";
+        });
+        btn.style.background = "#bef264";
+        btn.style.fontWeight = "600";
 
-      renderVehicles(selected);
-    });
+        renderVehicles(selected);
+      },
+      true
+    );
   });
 
   // Shuru mein saari gaadiyan dikhayein
   renderVehicles("All rides");
+}
+
+// Thoda delay dekar run karein taaki site ka purana script pehle load ho jaye
+window.addEventListener("load", () => {
+  setTimeout(initRoamVehicles, 300);
 });
+2 Zaroori Check:
+index.html mein check karein: <script src="vehicles-data.js"></script> aapke baaki <script> tags ke neeche (aur </body> ke theek upar) hona chahiye.
+
+Hard Refresh karein: GitHub par upload karne ke 1–2 minute baad browser mein Ctrl + Shift + R (Windows) ya Cmd + Shift + R (Mac) dabakar page reload karein, kyunki browser purani cached file dikhata rehta hai.
+
+Agar phir bhi na chale to batayein aapne index.html mein script tag kahan lagaya hai!

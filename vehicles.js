@@ -1,5 +1,5 @@
-// vehiclesdata.js (Guaranteed Live Fix)
-const vehiclesData = [
+// vehicles.js — All rides, Cars, Bikes, Scooters renderer & filter
+const ROAM_VEHICLES = [
   // CARS
   {
     id: 1,
@@ -84,11 +84,11 @@ const vehiclesData = [
   }
 ];
 
-let currentCategory = "All rides";
+let roamSelectedCategory = "All rides";
 
-function getCardHTML(v) {
+function roamBuildCard(v) {
   return `
-    <div style="border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: left;">
+    <div style="border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: left;">
       <img src="${v.image}" alt="${v.name}" style="width: 100%; height: 180px; object-fit: cover; display: block;">
       <div style="padding: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -102,7 +102,7 @@ function getCardHTML(v) {
             <strong style="font-size: 18px; color: #111827;">₹${v.price}</strong>
             <span style="font-size: 12px; color: #6b7280;"> / day</span>
           </div>
-          <button onclick="alert('Booking selected: ${v.name} (₹${v.price}/day)')" style="background: #84cc16; color: #111; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          <button type="button" onclick="alert('Booked: ${v.name} (₹${v.price}/day)')" style="background: #84cc16; color: #111827; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;">
             Book now
           </button>
         </div>
@@ -111,39 +111,40 @@ function getCardHTML(v) {
   `;
 }
 
-function syncVehiclesUI() {
-  const filtered =
-    currentCategory === "All rides"
-      ? vehiclesData
-      : vehiclesData.filter(
-          (v) => v.type.toLowerCase() === currentCategory.toLowerCase()
+function roamSyncFleet() {
+  const list =
+    roamSelectedCategory === "All rides"
+      ? ROAM_VEHICLES
+      : ROAM_VEHICLES.filter(
+          (item) => item.type.toLowerCase() === roamSelectedCategory.toLowerCase()
         );
 
-  // Count text ("0 rides to explore") अपडेट करना
-  const countEl = Array.from(document.querySelectorAll("p, span, div")).find((el) =>
+  // Count update ("0 rides to explore" -> "7 rides to explore")
+  const countNode = Array.from(document.querySelectorAll("p, span, div")).find((el) =>
     /^\d+\s+rides to explore$/i.test(el.textContent.trim())
   );
-  if (countEl && countEl.textContent.trim() !== `${filtered.length} rides to explore`) {
-    countEl.textContent = `${filtered.length} rides to explore`;
+  if (countNode && countNode.textContent.trim() !== `${list.length} rides to explore`) {
+    countNode.textContent = `${list.length} rides to explore`;
   }
 
-  // Empty state ("No rides found just yet" / "Backend connection required") को कार्ड्स से बदलना
-  let grid = document.getElementById("roam-vehicles-grid");
+  // Empty state ("No rides found just yet") replace karna
+  let grid = document.getElementById("roam-fleet-grid");
   if (!grid) {
-    const targetEl = Array.from(document.querySelectorAll("h2, p, div, span")).find(
+    const emptyHeading = Array.from(document.querySelectorAll("h2, h3, p, div")).find(
       (el) =>
         el.textContent.trim() === "No rides found just yet" ||
         el.textContent.trim() === "Backend connection required"
     );
 
-    if (targetEl) {
-      const box =
-        targetEl.textContent.trim() === "No rides found just yet" && targetEl.parentElement
-          ? targetEl.parentElement
-          : targetEl;
+    if (emptyHeading) {
+      const wrapper =
+        emptyHeading.textContent.trim() === "No rides found just yet" &&
+        emptyHeading.parentElement
+          ? emptyHeading.parentElement
+          : emptyHeading;
 
       grid = document.createElement("div");
-      grid.id = "roam-vehicles-grid";
+      grid.id = "roam-fleet-grid";
       grid.style.cssText = `
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -151,30 +152,36 @@ function syncVehiclesUI() {
         margin-top: 20px;
         width: 100%;
       `;
-      box.replaceWith(grid);
+      wrapper.replaceWith(grid);
     }
   }
 
   if (grid) {
-    grid.innerHTML = filtered.map(getCardHTML).join("");
+    grid.innerHTML = list.map(roamBuildCard).join("");
   }
 
-  // Category buttons पर क्लिक लिसनर लगाना
+  // Category buttons ("All rides", "Cars", "Bikes", "Scooters") + "Show all rides"
   const categories = ["All rides", "Cars", "Bikes", "Scooters"];
-  const buttons = Array.from(document.querySelectorAll("button")).filter((btn) =>
-    categories.includes(btn.textContent.trim())
-  );
+  const buttons = Array.from(document.querySelectorAll("button"));
 
   buttons.forEach((btn) => {
-    if (!btn.dataset.roamBound) {
-      btn.dataset.roamBound = "1";
+    const label = btn.textContent.trim();
+    if (categories.includes(label) && !btn.dataset.roamCategoryBound) {
+      btn.dataset.roamCategoryBound = "1";
       btn.addEventListener("click", () => {
-        currentCategory = btn.textContent.trim();
-        setTimeout(syncVehiclesUI, 50);
+        roamSelectedCategory = label;
+        setTimeout(roamSyncFleet, 40);
+      });
+    }
+    if (label === "Show all rides" && !btn.dataset.roamShowAllBound) {
+      btn.dataset.roamShowAllBound = "1";
+      btn.addEventListener("click", () => {
+        roamSelectedCategory = "All rides";
+        setTimeout(roamSyncFleet, 40);
       });
     }
   });
 }
 
-setInterval(syncVehiclesUI, 500);
-window.addEventListener("load", () => setTimeout(syncVehiclesUI, 200));
+setInterval(roamSyncFleet, 400);
+window.addEventListener("load", () => setTimeout(roamSyncFleet, 150));
